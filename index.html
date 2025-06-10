@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Token Creator & Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --solana-purple: #9945FF;
+            --solana-green: #14F195;
+            --solana-dark: #0F0F0F;
+        }
+        
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--solana-dark);
+            border-bottom: 1px solid var(--solana-purple);
+        }
+        
+        .btn-solana {
+            background: linear-gradient(45deg, var(--solana-purple), var(--solana-green));
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+        
+        .card {
+            background-color: #1E1E1E;
+            border: 1px solid #333;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(153, 69, 255, 0.2);
+        }
+        
+        .exchange-badge {
+            height: 40px;
+            margin: 5px;
+        }
+        
+        .verified-badge {
+            color: var(--solana-green);
+            font-size: 1.2rem;
+        }
+        
+        #tokenChart {
+            background-color: #1E1E1E;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-results {
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-color: #1E1E1E;
+            border: 1px solid #333;
+            border-radius: 0 0 5px 5px;
+            display: none;
+        }
+        
+        .search-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+        }
+        
+        .search-item:hover {
+            background-color: #2E2E2E;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--solana-purple);
+        }
+        
+        .banner-section {
+            background: linear-gradient(135deg, rgba(20, 241, 149, 0.1), rgba(153, 69, 255, 0.1));
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-coins me-2"></i>
+                Solana Token Suite
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#create">Create Token</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#marketplace">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#verified">Verified Tokens</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#exchanges">Exchanges</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-solana me-2" id="connectWallet">
+                        <i class="fas fa-wallet me-1"></i> Connect Wallet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Banner Section -->
+        <div class="banner-section text-center">
+            <h2 class="mb-3">List Your Token on Major Solana DEXs</h2>
+            <div class="d-flex justify-content-center flex-wrap">
+                <img src="https://radium.io/static/media/radium_logo.1a0b1a3e.svg" alt="Radium" class="exchange-badge">
+                <img src="https://jup.ag/svg/jupiter-logo.svg" alt="Jupiter" class="exchange-badge">
+                <img src="https://pump.monster/logo.png" alt="PumpSwap" class="exchange-badge">
+                <img src="https://orca.so/static/img/orca-logo.svg" alt="Orca" class="exchange-badge">
+                <img src="https://raydium.io/logo.svg" alt="Raydium" class="exchange-badge">
+            </div>
+            <p class="mt-3">Get your token listed on major decentralized exchanges with liquidity</p>
+        </div>
+
+        <!-- Token Creation Section -->
+        <section id="create" class="my-5 py-4">
+            <h2 class="text-center mb-4"><i class="fas fa-plus-circle me-2"></i>Create Your Solana Token</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h4>Token Details</h4>
+                        <div class="mb-3">
+                            <label for="tokenName" class="form-label">Token Name</label>
+                            <input type="text" class="form-control bg-dark text-white" id="tokenName" placeholder="My Awesome Token">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tokenSymbol" class="form-label">Token Symbol</label>
+                            <input type="text" class="form-control bg-dark text-white" id="tokenSymbol" placeholder="AWESOME">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tokenSupply" class="form-label">Total Supply</label>
+                            <input type="number" class="form-control bg-dark text-white" id="tokenSupply" placeholder="1000000">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tokenDecimals" class="form-label">Decimals</label>
+                            <input type="number" class="form-control bg-dark text-white" id="tokenDecimals" value="9" min="0" max="18">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="revokeMint" checked>
+                            <label class="form-check-label" for="revokeMint">
+                                Revoke Mint Authority (Recommended)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h4>Liquidity Pool</h4>
+                        <div class="mb-3">
+                            <label for="initialLiquidity" class="form-label">Initial Liquidity (SOL)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="initialLiquidity" placeholder="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="initialTokenAmount" class="form-label">Initial Token Amount</label>
+                            <input type="number" class="form-control bg-dark text-white" id="initialTokenAmount" placeholder="100000">
+                        </div>
+                        <div class="mb-3">
+                            <label for="lpLockDuration" class="form-label">LP Lock Duration (Days)</label>
+                            <input type="number" class="form-control bg-dark text-white" id="lpLockDuration" placeholder="30">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Exchange Listings</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="listRadium" checked>
+                                <label class="form-check-label" for="listRadium">
+                                    Radium
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="listJupiter" checked>
+                                <label class="form-check-label" for="listJupiter">
+                                    Jupiter
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="listPumpSwap" checked>
+                                <label class="form-check-label" for="listPumpSwap">
+                                    PumpSwap
+                                </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-solana w-100 mt-2" id="createTokenBtn">
+                            <i class="fas fa-magic me-1"></i> Create Token & Liquidity Pool
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Token Marketplace Section -->
+        <section id="marketplace" class="my-5 py-4">
+            <h2 class="text-center mb-4"><i class="fas fa-store me-2"></i>Token Marketplace</h2>
+            <div class="row mb-4">
+                <div class="col-md-8 offset-md-2">
+                    <div class="search-container">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-dark text-white" id="tokenSearch" placeholder="Search for any token on Solana...">
+                            <button class="btn btn-solana" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="search-results" id="searchResults"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card p-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 id="selectedTokenName">Select a token to view chart</h4>
+                            <div id="tokenVerifiedBadge" class="verified-badge" style="display: none;">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </div>
+                        </div>
+                        <canvas id="tokenChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3 mb-4">
+                        <h4 class="mb-3">Trade</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Buy/Sell</label>
+                            <select class="form-select bg-dark text-white mb-2" id="tradeAction">
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount</label>
+                            <input type="number" class="form-control bg-dark text-white" id="tradeAmount" placeholder="0.0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <input type="text" class="form-control bg-dark text-white" id="tradePrice" readonly>
+                        </div>
+                        <button class="btn btn-solana w-100" id="executeTrade">
+                            <i class="fas fa-exchange-alt me-1"></i> Execute Trade
+                        </button>
+                    </div>
+                    <div class="card p-3">
+                        <h4 class="mb-3">Token Info</h4>
+                        <div class="mb-2">
+                            <span class="text-muted">Symbol:</span>
+                            <span id="tokenSymbolInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted">Price:</span>
+                            <span id="tokenPriceInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted">Market Cap:</span>
+                            <span id="tokenMarketCapInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted">Liquidity:</span>
+                            <span id="tokenLiquidityInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted">24h Volume:</span>
+                            <span id="tokenVolumeInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-muted">Holders:</span>
+                            <span id="tokenHoldersInfo" class="float-end">-</span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-sm btn-outline-light me-2" id="viewOnExplorer">
+                                <i class="fas fa-external-link-alt me-1"></i> Explorer
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-light" id="addToWallet">
+                                <i class="fas fa-wallet me-1"></i> Add to Wallet
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verified Tokens Section -->
+        <section id="verified" class="my-5 py-4">
+            <h2 class="text-center mb-4"><i class="fas fa-check-circle me-2"></i>Verified Tokens</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card p-3">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>Symbol</th>
+                                        <th>Price</th>
+                                        <th>24h %</th>
+                                        <th>Market Cap</th>
+                                        <th>Liquidity</th>
+                                        <th>Verified</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="verifiedTokensTable">
+                                    <!-- Verified tokens will be loaded here -->
+                                    <tr>
+                                        <td colspan="8" class="text-center">Loading verified tokens...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exchange Listings Section -->
+        <section id="exchanges" class="my-5 py-4">
+            <h2 class="text-center mb-4"><i class="fas fa-exchange-alt me-2"></i>Exchange Listings</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card p-4 h-100 text-center">
+                        <img src="https://radium.io/static/media/radium_logo.1a0b1a3e.svg" alt="Radium" class="mx-auto mb-3" style="height: 50px;">
+                        <h4>Radium</h4>
+                        <p>Concentrated liquidity AMM with advanced trading features</p>
+                        <a href="https://radium.io" target="_blank" class="btn btn-solana mt-3">Trade Now</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card p-4 h-100 text-center">
+                        <img src="https://jup.ag/svg/jupiter-logo.svg" alt="Jupiter" class="mx-auto mb-3" style="height: 50px;">
+                        <h4>Jupiter</h4>
+                        <p>Best price aggregation across all Solana DEXs</p>
+                        <a href="https://jup.ag" target="_blank" class="btn btn-solana mt-3">Trade Now</a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card p-4 h-100 text-center">
+                        <img src="https://pump.monster/logo.png" alt="PumpSwap" class="mx-auto mb-3" style="height: 50px;">
+                        <h4>PumpSwap</h4>
+                        <p>Community-driven DEX with low fees</p>
+                        <a href="https://pump.monster" target="_blank" class="btn btn-solana mt-3">Trade Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Solana Token Suite</h5>
+                    <p>Create, manage, and trade tokens on the Solana blockchain with ease.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Previous head content remains the same -->
+</head>
+<body>
+    <!-- Previous navigation remains the same -->
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Project Overview Section -->
+        <section id="overview" class="my-5 py-4">
+            <div class="card p-4">
+                <h2 class="text-center mb-4"><i class="fas fa-info-circle me-2"></i>Project Overview</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Our Mission</h4>
+                        <p>The Solana Token Suite democratizes token creation and trading on the Solana blockchain by providing:</p>
+                        <ul>
+                            <li>One-click token creation with automatic liquidity pool setup</li>
+                            <li>Multi-DEX listing integration (Radium, Jupiter, PumpSwap)</li>
+                            <li>Comprehensive token verification services</li>
+                            <li>User-friendly trading interface with advanced charting</li>
+                            <li>Transparent token discovery platform</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Public Goods for Solana</h4>
+                        <p>Our platform contributes to the Solana ecosystem by:</p>
+                        <ul>
+                            <li><strong>Reducing scams:</strong> Verified token program with rug-check validation</li>
+                            <li><strong>Increasing liquidity:</strong> Auto-LP creation with revocable mint authority</li>
+                            <li><strong>Improving UX:</strong> Unified interface for token creation and trading</li>
+                            <li><strong>Educating users:</strong> Transparent metrics and verification badges</li>
+                            <li><strong>Boosting adoption:</strong> Lowering barriers to token creation and trading</li>
+                        </ul>
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-lightbulb me-2"></i> All verification tools and basic token creation will remain free to support ecosystem growth.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Budget Proposal Section -->
+        <section id="budget" class="my-5 py-4">
+            <div class="card p-4">
+                <h2 class="text-center mb-4"><i class="fas fa-wallet me-2"></i>Budget Proposal</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>Milestone</th>
+                                <th>Description</th>
+                                <th>Duration</th>
+                                <th>Budget (SOL)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1. Core Development</td>
+                                <td>Token creation engine with revocable mint authority</td>
+                                <td>6 weeks</td>
+                                <td>1,500</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2. DEX Integration</td>
+                                <td>Radium, Jupiter, and PumpSwap API connections</td>
+                                <td>4 weeks</td>
+                                <td>1,200</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>3. Verification System</td>
+                                <td>Rug-check, liquidity validation, and audit tools</td>
+                                <td>5 weeks</td>
+                                <td>1,800</td>
+                                <td><span class="badge bg-warning">In Progress</span></td>
+                            </tr>
+                            <tr>
+                                <td>4. Trading Interface</td>
+                                <td>Charting, order book, and swap functionality</td>
+                                <td>6 weeks</td>
+                                <td>2,000</td>
+                                <td><span class="badge bg-secondary">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>5. Security Audit</td>
+                                <td>Smart contract and platform security review</td>
+                                <td>3 weeks</td>
+                                <td>1,500</td>
+                                <td><span class="badge bg-secondary">Upcoming</span></td>
+                            </tr>
+                            <tr class="table-active">
+                                <td><strong>Total</strong></td>
+                                <td></td>
+                                <td><strong>24 weeks</strong></td>
+                                <td><strong>8,000 SOL</strong></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Budget Allocation</h5>
+                        <canvas id="budgetChart" height="200"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Funding Strategy</h5>
+                        <div class="card bg-dark border-secondary mb-3">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item bg-dark text-white">
+                                        <i class="fas fa-hand-holding-usd me-2"></i>
+                                        <strong>30%</strong> - Community grants & donations
+                                    </li>
+                                    <li class="list-group-item bg-dark text-white">
+                                        <i class="fas fa-project-diagram me-2"></i>
+                                        <strong>40%</strong> - Protocol treasury (future development)
+                                    </li>
+                                    <li class="list-group-item bg-dark text-white">
+                                        <i class="fas fa-users me-2"></i>
+                                        <strong>20%</strong> - Team compensation
+                                    </li>
+                                    <li class="list-group-item bg-dark text-white">
+                                        <i class="fas fa-shield-alt me-2"></i>
+                                        <strong>10%</strong> - Security & audits
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> 100% of trading fees from verified tokens will be reinvested into platform development.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rest of your existing sections (Token Creation, Marketplace, etc.) go here -->
+        
+    </div>
+
+    <script>
+        // Budget Chart
+        const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+        const budgetChart = new Chart(budgetCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Development', 'Security', 'Marketing', 'Community', 'Reserves'],
+                datasets: [{
+                    data: [45, 15, 20, 15, 5],
+                    backgroundColor: [
+                        '#9945FF',
+                        '#14F195',
+                        '#FF6B6B',
+                        '#4ECDC4',
+                        '#FFD166'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Rest of your existing JavaScript goes here
+    </script>
+</body>
+                    </html>
